@@ -13,7 +13,7 @@ export default function Home() {
             Plataforma pública e gratuita
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            O <span className="text-red-500">Waze</span> dos{" "}
+            O <span className="text-red-500">Mapa</span> dos{" "}
             <span className="text-red-500">buracos</span> urbanos
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
