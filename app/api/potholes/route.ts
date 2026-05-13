@@ -22,13 +22,15 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Não autorizado" }, { status: 401 })
   }
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const count = await prisma.pothole.count({
-    where: { userId: session.user.id, createdAt: { gte: today } },
-  })
-  if (count >= 5) {
-    return Response.json({ error: "Limite de 5 registros por dia atingido" }, { status: 429 })
+  if (session.user.role !== "ADMIN") {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const count = await prisma.pothole.count({
+      where: { userId: session.user.id, createdAt: { gte: today } },
+    })
+    if (count >= 10) {
+      return Response.json({ error: "Limite de 10 registros por dia atingido" }, { status: 429 })
+    }
   }
 
   const body = await req.json()
