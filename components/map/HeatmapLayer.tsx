@@ -21,10 +21,11 @@ export function HeatmapLayer({ points }: Props) {
       if (!mounted) return
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       heatLayer = (L as any).heatLayer(points, {
-        radius: 30,
-        blur: 20,
+        radius: 35,
+        blur: 25,
         maxZoom: 17,
-        gradient: { 0.2: "#3b82f6", 0.5: "#f97316", 1: "#ef4444" },
+        minOpacity: 0.4,
+        gradient: { 0.3: "#3b82f6", 0.6: "#f97316", 1: "#ef4444" },
       })
       heatLayer.addTo(map)
     }
