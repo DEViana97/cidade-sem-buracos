@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String               @id @default(cuid())
+  name        String
+  email       String               @unique
+  password    String
+  role        Role                 @default(USER)
+  createdAt   DateTime             @default(now())
+  potholes    Pothole[]
+  resetTokens PasswordResetToken[]
+}
+
+model Pothole {
+  id          String    @id @default(cuid())
+  address     String
+  latitude    Float
+  longitude   Float
+  description String?
+  imageUrl    String?
+  status      Status    @default(OPEN)
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  OPEN
+  RESOLVED
+}
