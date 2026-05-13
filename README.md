@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BuracoMap — Mapeamento Público de Buracos Urbanos
 
-## Getting Started
+Plataforma de fiscalização cidadã para registro e acompanhamento de buracos em vias públicas.
 
-First, run the development server:
+## Stack
 
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS v4** + shadcn/ui (Base UI)
+- **TanStack Query v5**
+- **React Leaflet** + react-leaflet-cluster + leaflet.heat
+- **PostgreSQL** + Prisma ORM v7
+- **NextAuth v5** — autenticação JWT
+- **Recharts** — gráficos
+- **UploadThing** — upload de imagens
+
+## Funcionalidades
+
+- Mapa público interativo com pins coloridos por urgência
+- Heatmap de concentração (toggle)
+- Clusterização de pins em áreas densas
+- Página pública de cada buraco com compartilhamento (WhatsApp, Twitter/X, link direto)
+- Dashboard público com estatísticas em tempo real
+- Registro com geolocalização automática e upload de foto
+- Resolução com confirmação e histórico de datas
+- Dashboard pessoal do usuário
+- Painel admin com gestão de usuários
+- Anti-spam: máx. 5 registros por usuário/dia
+- Auth completo: cadastro, login, recuperação de senha
+
+## Cores dos marcadores
+
+| Cor | Significado |
+|-----|-------------|
+| 🟡 Amarelo | Aberto < 7 dias |
+| 🟠 Laranja | Aberto 7–30 dias |
+| 🔴 Vermelho | Aberto > 30 dias |
+| 🟢 Verde | Resolvido |
+
+## Setup local
+
+### 1. Instalar dependências
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Variáveis de ambiente
+```bash
+cp .env.example .env
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Edite `.env`:
+- `DATABASE_URL` — PostgreSQL connection string
+- `AUTH_SECRET` — `openssl rand -base64 32`
+- `UPLOADTHING_SECRET` / `UPLOADTHING_APP_ID` — [uploadthing.com](https://uploadthing.com)
+- `SMTP_*` — credenciais SMTP
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Banco de dados (dev local)
+```bash
+# Terminal 1: inicia servidor PostgreSQL local
+npx prisma dev
 
-## Learn More
+# Terminal 2: aplica schema e gera client
+npx prisma db push
+npx prisma generate
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Dev
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Acesse: http://localhost:3000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Build
+```bash
+npm run build && npm start
+```
 
-## Deploy on Vercel
+## Deploy (Vercel)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Conecte o repositório ao Vercel
+2. Configure envs no painel Vercel
+3. Use PostgreSQL externo (Neon, Supabase, Railway) — atualize `DATABASE_URL`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Criar primeiro admin
+
+```sql
+UPDATE "User" SET role = 'ADMIN' WHERE email = 'seu@email.com';
+```
+
+Ou via Prisma Studio:
+```bash
+npx prisma studio
+```
+
+## Estrutura
+
+```
+app/              # Pages e API routes
+components/       # UI components (map, potholes, dashboard, auth)
+hooks/            # TanStack Query hooks
+lib/              # prisma, auth, utils, validations
+types/            # TypeScript types
+prisma/           # schema.prisma
+```
